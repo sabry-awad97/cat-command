@@ -8,7 +8,7 @@ interface Options {
   numberNonblankLines: boolean;
 }
 
-export async function main() {
+export async function run() {
   // Define command line options
   program
     .option('-n, --number', 'number lines')
@@ -82,6 +82,15 @@ export async function main() {
     }
   }
 }
+
+const main = async () => {
+  try {
+    await run();
+  } catch (error: any) {
+    console.log(error.message);
+    process.exit(1);
+  }
+};
 
 main();
 
