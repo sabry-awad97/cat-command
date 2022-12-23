@@ -1,0 +1,24 @@
+{
+  "name": "typescript",
+  "version": "1.0.0",
+  "main": "dist/main.js",
+  "dependencies": {
+    "@types/yargs": "^17.0.17",
+    "commander": "^9.4.1",
+    "minimist": "^1.2.7",
+    "vitest": "^0.26.2",
+    "yargs": "^17.6.2"
+  },
+  "devDependencies": {
+    "@types/minimist": "^1.2.2",
+    "@types/node": "^18.11.17",
+    "mock-stdin": "^1.0.0"
+  },
+  "scripts": {
+    "test": "vitest"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
