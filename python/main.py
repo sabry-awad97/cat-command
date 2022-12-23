@@ -41,7 +41,7 @@ def cat(filenames, options):
         f.close()
 
 
-def main():
+def run():
     # Parse command line arguments
     import argparse
     parser = argparse.ArgumentParser(
@@ -60,11 +60,15 @@ def main():
         "number_nonblank_lines": args.number_nonblank,
     }
 
-    print(options)
-
     # Call cat function with the options and file names
     cat(args.files, options)
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        run()
+    except KeyboardInterrupt:
+        sys.exit(1)
+    except Exception as e:
+        print(e)
+        sys.exit(1)
