@@ -24,8 +24,16 @@ fn main() -> io::Result<()> {
             for line in reader.lines() {
                 let line = line?;
                 let blank = line.trim().is_empty();
+
                 if options.squeeze_blank_lines && prev_blank && blank {
                     continue;
+                }
+                let mut line = line.replace("\t", "^I");
+                if options.show_nonprinting {
+                    line = escape_nonprinting(line);
+                }
+                if options.show_all {
+                    line = escape_nonprinting(line);
                 }
                 if options.number_all_lines {
                     write_line(&mut stdout, &line, &mut buffer, line_number)?;
@@ -47,6 +55,8 @@ struct Options {
     number_nonempty_lines: bool,
     number_all_lines: bool,
     squeeze_blank_lines: bool,
+    show_nonprinting: bool,
+    show_all: bool,
 }
 
 impl Options {
@@ -55,6 +65,8 @@ impl Options {
             number_nonempty_lines: false,
             number_all_lines: false,
             squeeze_blank_lines: false,
+            show_nonprinting: false,
+            show_all: false,
         }
     }
 }
@@ -69,6 +81,8 @@ fn parse_args(options: &mut Options, args: impl Iterator<Item = String>) -> Vec<
                     'b' => options.number_nonempty_lines = true,
                     'n' => options.number_all_lines = true,
                     's' => options.squeeze_blank_lines = true,
+                    't' => options.show_nonprinting = true,
+                    'v' => options.show_all = true,
                     _ => {}
                 }
             }
@@ -93,4 +107,16 @@ fn write_line(
         writeln!(stdout, "{}", line)?;
     }
     stdout.flush()
+}
+
+fn escape_nonprinting(s: String) -> String {
+    s.chars()
+        .map(|c| {
+            if c.is_ascii_control() {
+                format!("^{}", (c as u8 + 64) as char)
+            } else {
+                c.to_string()
+            }
+        })
+        .collect()
 }

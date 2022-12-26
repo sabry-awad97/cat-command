@@ -20,3 +20,18 @@ Here are some examples of how to use the `cat` command:
    `cat file1.txt file2.txt | lpr`
 
 The `cat` command has many options and can be used in a variety of ways. For more information, you can type `man cat` at the command prompt to view the manual page for the `cat` command.
+
+The implementation of cat supports the following options:
+
+`-b`: Number nonempty output lines, but do not number lines that contain only whitespace.
+
+`-n`: Number all output lines.
+
+`-s`: Squeeze multiple consecutive blank lines into a single blank line.
+
+`-t`: Show tabs as ^I.
+
+`-v`: Show nonprinting characters as ^X, where X represents the ASCII character corresponding to the nonprinting character.
+
+`-A`: Show all characters, including nonprinting characters, as ^X.
+It also supports concatenating multiple files and displaying their contents.
