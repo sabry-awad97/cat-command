@@ -6,7 +6,7 @@ use std::path::Path;
 const DEFAULT_BUF_SIZE: usize = 4096;
 
 fn main() -> io::Result<()> {
-    let mut options = Options::default();
+    let mut options = Options::new();
     let files = parse_args(&mut options, env::args().skip(1));
 
     let mut buffer = Vec::with_capacity(DEFAULT_BUF_SIZE);
@@ -14,6 +14,7 @@ fn main() -> io::Result<()> {
     let mut stdout = stdout.lock();
 
     let mut line_number = 1;
+    let mut prev_blank = false;
 
     for file in files {
         let path = Path::new(&file);
@@ -22,12 +23,17 @@ fn main() -> io::Result<()> {
             let reader = BufReader::new(file);
             for line in reader.lines() {
                 let line = line?;
+                let blank = line.trim().is_empty();
+                if options.squeeze_blank_lines && prev_blank && blank {
+                    continue;
+                }
                 if options.number_all_lines {
                     write_line(&mut stdout, &line, &mut buffer, line_number)?;
                     line_number += 1;
                 } else {
                     write_line(&mut stdout, &line, &mut buffer, 0)?;
                 }
+                prev_blank = blank;
             }
         } else {
             writeln!(stdout, "cat: {}: No such file or directory", file)?;
@@ -40,13 +46,15 @@ fn main() -> io::Result<()> {
 struct Options {
     number_nonempty_lines: bool,
     number_all_lines: bool,
+    squeeze_blank_lines: bool,
 }
 
-impl Default for Options {
-    fn default() -> Self {
-        Self {
+impl Options {
+    fn new() -> Options {
+        Options {
             number_nonempty_lines: false,
             number_all_lines: false,
+            squeeze_blank_lines: false,
         }
     }
 }
@@ -60,6 +68,7 @@ fn parse_args(options: &mut Options, args: impl Iterator<Item = String>) -> Vec<
                 match ch {
                     'b' => options.number_nonempty_lines = true,
                     'n' => options.number_all_lines = true,
+                    's' => options.squeeze_blank_lines = true,
                     _ => {}
                 }
             }
